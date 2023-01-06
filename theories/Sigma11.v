@@ -149,6 +149,11 @@ Module Sigma11Internal (Params : Sigma11Parameters).
         format "'[' \oall ( i 'in' A ) '/ ' F ']'").
   Notation "\oall ( i 'in' A ) F" :=
     (\big[andob/Some true]_(i | i \in A) F) : big_scope.
+  Reserved Notation "\oexi ( i 'in' r | P ) F"
+    (at level 36, F at level 36, i, r at level 50,
+        format "'[' \oexi ( i 'in' r | P ) '/ ' F ']'").
+  Notation "\oexi ( i 'in' A | P ) F" := 
+    (\big[orob/Some false]_(i | (i \in A) && P) F) : big_scope.
   Reserved Notation "\oexi ( i 'in' A ) F"
     (at level 36, F at level 36, i, A at level 50,
         format "'[' \oexi ( i 'in' A ) '/ ' F ']'").
@@ -204,9 +209,8 @@ Module Sigma11Internal (Params : Sigma11Parameters).
     \oall (r in 'F_FSize | r < p') Sigma11FormulaDenote (AddModelV M r) f
     ) d
   | Sigma11ForSome bs y f => 
-    \oexi (F in {ffun 'F_FSize ^ length bs -> option ('F_FSize)})
-    andob
-      (Fun_Bound_Check M (finfun_of_tuple (in_tuple bs)) y F)
+    \oexi (F in {ffun 'F_FSize ^ length bs -> option ('F_FSize)} |
+      Fun_Bound_Check M (finfun_of_tuple (in_tuple bs)) y F == Some true)
       (Sigma11FormulaDenote (AddModelF M (existT _ (size bs) F)) f)
   | Sigma11Top => Some true
   | Sigma11Bot => Some false
