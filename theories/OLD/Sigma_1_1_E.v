@@ -154,7 +154,7 @@ forall (ins : |[n]| -> 'F_FSize) (out : 'F_FSize),
   f ins == Some out -> 
   FunBounds M ins out bs y == true.
 
- Fixpoint QuantifiedFormula_Denote (M : Sigma11Model) (f : @QuantifiedFormula (F_E M)) : Prop :=
+ (* Fixpoint QuantifiedFormula_Denote (M : Sigma11Model) (f : @QuantifiedFormula (F_E M)) : Prop :=
   match f with
   | ZO z => ZerothOrder_Denote M z == Some true
   | QExists bs y f => 
@@ -166,6 +166,6 @@ forall (ins : |[n]| -> 'F_FSize) (out : 'F_FSize),
     | Some p' => forall (r : 'F_FSize), r < p' -> QuantifiedFormula_Denote (AddModelV M r) f
     end
   end.
-Next Obligation.
+Next Obligation. *)
 
 End Sigma_1_1_Denotation.
