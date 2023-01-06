@@ -160,9 +160,6 @@ Module Sigma11Internal (Params : Sigma11Parameters).
   Notation "\oexi ( i 'in' A ) F" :=
     (\big[orob/Some false]_(i | i \in A) F) : big_scope.
 
-  (* Definition exiob {A : finType} (B : A -> option bool) : option bool :=
-    \big[orob/(Some false)]_(y <- enum A) (B y). *)
-
   Definition Fun_Bound_Check 
     (M : Sigma11Model)
     {n : nat}
