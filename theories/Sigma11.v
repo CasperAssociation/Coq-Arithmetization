@@ -205,9 +205,8 @@ Module Sigma11Internal (Params : Sigma11Parameters).
     obind (fun r1 => obind (fun r2 => Some (r1 == r2)) d2) d1
   | Sigma11Forall b f => 
     let d := Sigma11TermDenote M b in
-    obind (fun p' : 'F_FSize =>
-    \oall (r in 'F_FSize | r < p') Sigma11FormulaDenote (AddModelV M r) f
-    ) d
+    \oall (r in 'F_FSize | obind (fun p' : 'F_FSize => Some (r < p')) (Sigma11TermDenote M b) == Some true) 
+      Sigma11FormulaDenote (AddModelV M r) f
   | Sigma11ForSome bs y f => 
     \oexi (F in {ffun 'F_FSize ^ length bs -> option ('F_FSize)} |
       Fun_Bound_Check M (finfun_of_tuple (in_tuple bs)) y F == Some true)
