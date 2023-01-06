@@ -1,7 +1,7 @@
 From Hammer Require Import Tactics Reflect Hints.
 From Hammer Require Import Hammer.
 
-From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat ssralg seq fintype tuple eqtype.
+From mathcomp Require Import ssreflect ssrfun finfun ssrbool ssrnat ssralg seq fintype tuple eqtype.
 
 From Coq Require Import FunctionalExtensionality.
 From Coq Require Import Relation_Definitions RelationClasses.
@@ -372,6 +372,10 @@ Proof.
 Qed.
 
 Definition emptyTuple {A} : forall (i : |[0]|), A i. fcrush. Defined.
+Definition emptyI {A} : forall (i : 'I_0), A i. destruct i; fcrush. Defined.
+Definition emptyFfun {A} : {ffun forall i : 'I_0, A i}.
+ apply finfun=> x; destruct x; fcrush.
+Qed.
 
 Program Fixpoint lnth {T} (s : seq T) : |[length s]| -> T :=
   match s with
@@ -619,6 +623,23 @@ Program Fixpoint option_fun {A} {l : nat} (t : |[l]| -> option A) : option (|[l]
     )) r) fst
   end.
 Next Obligation. by destruct x. Qed.
+
+Program Fixpoint option_ffun {A} {l}
+  (t : option A ^ l) : option (A ^ l) := 
+  match l with
+  | 0 => Some emptyFfun
+  | m.+1 =>
+    let most : (option A ^ m) := [ffun x : 'I_m => t (inord (x.+1))] in
+    let r : option (A ^ m) := option_ffun most in
+    let fst : option A := t (inord 0) in
+    obind (fun fst => obind (fun r : (A ^ m) => Some (
+      [ffun x : 'I_(m.+1) => 
+      (if nat_of_ord x == 0 as b return nat_of_ord x == 0 = b -> A 
+       then fun _ => fst
+       else fun _ => r (@Ordinal _ (x.-1) _)) (erefl _)
+      ])) r) fst
+  end.
+Next Obligation. destruct x as [[|x]]; auto. Qed.
 
 Record RingData : Type :=
   mkRingData {
