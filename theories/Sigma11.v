@@ -39,7 +39,7 @@ Module Sigma11Internal (Params : Sigma11Parameters).
   | Sigma11Or : Sigma11Formula -> Sigma11Formula -> Sigma11Formula
   | Sigma11Implies : Sigma11Formula -> Sigma11Formula -> Sigma11Formula
   | Sigma11Iff : Sigma11Formula -> Sigma11Formula -> Sigma11Formula
-  | Sigma11Forall : Sigma11Term -> 
+  | Sigma11ForAll : Sigma11Term -> 
     Sigma11Formula -> 
     Sigma11Formula
   | Sigma11ForSome : 
@@ -200,7 +200,7 @@ Module Sigma11Internal (Params : Sigma11Parameters).
     let d1 := Sigma11FormulaDenote M f1 in
     let d2 := Sigma11FormulaDenote M f2 in
     obind (fun r1 => obind (fun r2 => Some (r1 == r2)) d2) d1
-  | Sigma11Forall b f => 
+  | Sigma11ForAll b f => 
     let d := Sigma11TermDenote M b in
     \oall (r in 'F_FSize | obind (fun p' : 'F_FSize => Some (r < p')) (Sigma11TermDenote M b) == Some true) 
       Sigma11FormulaDenote (AddModelV M r) f
