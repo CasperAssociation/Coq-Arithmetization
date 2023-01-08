@@ -98,7 +98,155 @@ Module Sigma11LayeredTranslationInternal (Params : Sigma11Parameters).
   | Sigma11Bot => true
   end.
 
-  Definition Hole {A} : A. Admitted.
+  (*When quantifiers are bubbled, bound variables must be adjusted appropriately.
+
+    When formulas with bubbled quantifiers are joined, both the left and the right must be
+    adjusted in different ways.
+    All bound terms must be increased to make room for the right term's quantifiers.
+  *)
+  Fixpoint AdjustLeftTermBounds (rightExi rightUni : nat) 
+  (t : Sigma11Term) : Sigma11Term :=
+  match t with
+  | Sigma11Var m => Sigma11Var (m + rightUni)
+  | Sigma11App i a t => Sigma11App (i + rightExi) a t
+  | Sigma11Add r1 r2 => 
+    let p1 := AdjustLeftTermBounds rightExi rightUni r1 in
+    let p2 := AdjustLeftTermBounds rightExi rightUni r2 in
+    Sigma11Add p1 p2
+  | Sigma11Mul r1 r2 => 
+    let p1 := AdjustLeftTermBounds rightExi rightUni r1 in
+    let p2 := AdjustLeftTermBounds rightExi rightUni r2 in
+    Sigma11Mul p1 p2
+  | Sigma11IndLess r1 r2 => 
+    let p1 := AdjustLeftTermBounds rightExi rightUni r1 in
+    let p2 := AdjustLeftTermBounds rightExi rightUni r2 in
+    Sigma11IndLess p1 p2
+  | Sigma11Max r1 r2 => 
+    let p1 := AdjustLeftTermBounds rightExi rightUni r1 in
+    let p2 := AdjustLeftTermBounds rightExi rightUni r2 in
+    Sigma11Max p1 p2
+  | Sigma11Const n => Sigma11Const n
+  end.
+
+  (*When quantifiers are bubbled, bound variables must be adjusted appropriately.
+
+    When formulas with bubbled quantifiers are joined, both the left and the right must be
+    adjusted in different ways.
+    Bound terms only need to be adjusted if they would refference a quantifier
+    earlier than the left's new quantifiers.
+  *)
+  Fixpoint AdjustRightTermBounds (leftExi rightExi leftUni rightUni : nat) 
+  (t : Sigma11Term) : Sigma11Term :=
+  match t with
+  | Sigma11Var m => Sigma11Var (if m >= rightUni then m+leftUni else m)
+  | Sigma11App i a t => Sigma11App (if i >= rightExi then i+leftExi else i) a t
+  | Sigma11Add r1 r2 => 
+    let p1 := AdjustRightTermBounds leftExi rightExi leftUni rightUni r1 in
+    let p2 := AdjustRightTermBounds leftExi rightExi leftUni rightUni r2 in
+    Sigma11Add p1 p2
+  | Sigma11Mul r1 r2 => 
+    let p1 := AdjustRightTermBounds leftExi rightExi leftUni rightUni r1 in
+    let p2 := AdjustRightTermBounds leftExi rightExi leftUni rightUni r2 in
+    Sigma11Mul p1 p2
+  | Sigma11IndLess r1 r2 => 
+    let p1 := AdjustRightTermBounds leftExi rightExi leftUni rightUni r1 in
+    let p2 := AdjustRightTermBounds leftExi rightExi leftUni rightUni r2 in
+    Sigma11IndLess p1 p2
+  | Sigma11Max r1 r2 => 
+    let p1 := AdjustRightTermBounds leftExi rightExi leftUni rightUni r1 in
+    let p2 := AdjustRightTermBounds leftExi rightExi leftUni rightUni r2 in
+    Sigma11Max p1 p2
+  | Sigma11Const n => Sigma11Const n
+  end.
+
+  Fixpoint AdjustLeftFormulaBounds (rightExi rightUni : nat) 
+  (f : Sigma11LayeredZOFormula) : Sigma11LayeredZOFormula :=
+  match f with
+  | Sigma11LayeredEqual r1 r2 => 
+    let p1 := AdjustLeftTermBounds rightExi rightUni r1 in
+    let p2 := AdjustLeftTermBounds rightExi rightUni r2 in
+    Sigma11LayeredEqual p1 p2
+  | Sigma11LayeredLessOrEqual r1 r2 => 
+    let p1 := AdjustLeftTermBounds rightExi rightUni r1 in
+    let p2 := AdjustLeftTermBounds rightExi rightUni r2 in
+    Sigma11LayeredLessOrEqual p1 p2
+  | Sigma11LayeredNot f => 
+    let p := AdjustLeftFormulaBounds rightExi rightUni f in
+    Sigma11LayeredNot p
+  | Sigma11LayeredAnd f1 f2 => 
+    let p1 := AdjustLeftFormulaBounds rightExi rightUni f1 in
+    let p2 := AdjustLeftFormulaBounds rightExi rightUni f2 in
+    Sigma11LayeredAnd p1 p2
+  | Sigma11LayeredOr f1 f2 => 
+    let p1 := AdjustLeftFormulaBounds rightExi rightUni f1 in
+    let p2 := AdjustLeftFormulaBounds rightExi rightUni f2 in
+    Sigma11LayeredOr p1 p2
+  | Sigma11LayeredImplies f1 f2 => 
+    let p1 := AdjustLeftFormulaBounds rightExi rightUni f1 in
+    let p2 := AdjustLeftFormulaBounds rightExi rightUni f2 in
+    Sigma11LayeredImplies p1 p2
+  | Sigma11LayeredIff f1 f2 => 
+    let p1 := AdjustLeftFormulaBounds rightExi rightUni f1 in
+    let p2 := AdjustLeftFormulaBounds rightExi rightUni f2 in
+    Sigma11LayeredIff p1 p2
+  | Sigma11LayeredTop => Sigma11LayeredTop
+  | Sigma11LayeredBot => Sigma11LayeredBot
+  end.
+
+  Fixpoint AdjustRightFormulaBounds (leftExi rightExi leftUni rightUni : nat) 
+  (f : Sigma11LayeredZOFormula) : Sigma11LayeredZOFormula :=
+  match f with
+  | Sigma11LayeredEqual r1 r2 => 
+    let p1 := AdjustRightTermBounds leftExi rightExi leftUni rightUni r1 in
+    let p2 := AdjustRightTermBounds leftExi rightExi leftUni rightUni r2 in
+    Sigma11LayeredEqual p1 p2
+  | Sigma11LayeredLessOrEqual r1 r2 => 
+    let p1 := AdjustRightTermBounds leftExi rightExi leftUni rightUni r1 in
+    let p2 := AdjustRightTermBounds leftExi rightExi leftUni rightUni r2 in
+    Sigma11LayeredLessOrEqual p1 p2
+  | Sigma11LayeredNot f => 
+    let p := AdjustRightFormulaBounds leftExi rightExi leftUni rightUni f in
+    Sigma11LayeredNot p
+  | Sigma11LayeredAnd f1 f2 => 
+    let p1 := AdjustRightFormulaBounds leftExi rightExi leftUni rightUni f1 in
+    let p2 := AdjustRightFormulaBounds leftExi rightExi leftUni rightUni f2 in
+    Sigma11LayeredAnd p1 p2
+  | Sigma11LayeredOr f1 f2 => 
+    let p1 := AdjustRightFormulaBounds leftExi rightExi leftUni rightUni f1 in
+    let p2 := AdjustRightFormulaBounds leftExi rightExi leftUni rightUni f2 in
+    Sigma11LayeredOr p1 p2
+  | Sigma11LayeredImplies f1 f2 => 
+    let p1 := AdjustRightFormulaBounds leftExi rightExi leftUni rightUni f1 in
+    let p2 := AdjustRightFormulaBounds leftExi rightExi leftUni rightUni f2 in
+    Sigma11LayeredImplies p1 p2
+  | Sigma11LayeredIff f1 f2 => 
+    let p1 := AdjustRightFormulaBounds leftExi rightExi leftUni rightUni f1 in
+    let p2 := AdjustRightFormulaBounds leftExi rightExi leftUni rightUni f2 in
+    Sigma11LayeredIff p1 p2
+  | Sigma11LayeredTop => Sigma11LayeredTop
+  | Sigma11LayeredBot => Sigma11LayeredBot
+  end.
+
+  Fixpoint ExiNums (qs : seq (sum Sigma11Term (seq Sigma11Term * Sigma11Term))) : nat :=
+    match qs with
+    | nil => 0
+    | inl _ :: xs => ExiNums xs
+    | inr _ :: xs => (ExiNums xs).+1
+    end.
+
+  Fixpoint UniNums (qs : seq (sum Sigma11Term (seq Sigma11Term * Sigma11Term))) : nat :=
+    match qs with
+    | nil => 0
+    | inl _ :: xs => (UniNums xs).+1
+    | inr _ :: xs => UniNums xs
+    end.
+
+  Definition AdjustFormulaPair
+    (left right : seq (sum Sigma11Term (seq Sigma11Term * Sigma11Term)) * Sigma11LayeredZOFormula) :
+    Sigma11LayeredZOFormula * Sigma11LayeredZOFormula := 
+    let lqs := fst left in let leqs := ExiNums lqs in let luqs := UniNums lqs in let lf := snd left in 
+    let rqs := fst right in let reqs := ExiNums rqs in let ruqs := UniNums rqs in let rf := snd right in 
+    (AdjustLeftFormulaBounds reqs ruqs lf, AdjustRightFormulaBounds leqs reqs luqs ruqs rf).
 
   Fixpoint BubbleQuantifiers
     (f : Sigma11Formula) : 
@@ -113,20 +261,24 @@ Module Sigma11LayeredTranslationInternal (Params : Sigma11Parameters).
   | Sigma11And f1 f2 => 
     let p1 := BubbleQuantifiers f1 in
     let p2 := BubbleQuantifiers f2 in
-    (fst p1 ++ fst p2, Sigma11LayeredAnd (snd p1) (snd p2))
+    let p12 := AdjustFormulaPair p1 p2 in
+    (fst p1 ++ fst p2, uncurry Sigma11LayeredAnd p12)
   | Sigma11Or f1 f2 => 
     let p1 := BubbleQuantifiers f1 in
     let p2 := BubbleQuantifiers f2 in
-    (fst p1 ++ fst p2, Sigma11LayeredOr (snd p1) (snd p2))
+    let p12 := AdjustFormulaPair p1 p2 in
+    (fst p1 ++ fst p2, uncurry Sigma11LayeredOr p12)
   (*Note: this could be altered to swap non-functional quantifiers in the first argument prior to recursion*)
   | Sigma11Implies f1 f2 => 
     let p1 := BubbleQuantifiers f1 in
     let p2 := BubbleQuantifiers f2 in
-    (fst p1 ++ fst p2, Sigma11LayeredImplies (snd p1) (snd p2))
+    let p12 := AdjustFormulaPair p1 p2 in
+    (fst p1 ++ fst p2, uncurry Sigma11LayeredImplies p12)
   | Sigma11Iff f1 f2 => 
     let p1 := BubbleQuantifiers f1 in
     let p2 := BubbleQuantifiers f2 in
-    (fst p1 ++ fst p2, Sigma11LayeredImplies (snd p1) (snd p2))
+    let p12 := AdjustFormulaPair p1 p2 in
+    (fst p1 ++ fst p2, uncurry Sigma11LayeredIff p12)
   | Sigma11ForAll b f => 
     let p := BubbleQuantifiers f in
     (inl b :: fst p, snd p)
@@ -134,7 +286,7 @@ Module Sigma11LayeredTranslationInternal (Params : Sigma11Parameters).
     let p := BubbleQuantifiers f in
     (inr (bs, y) :: fst p, snd p)
   | Sigma11Top => (nil, Sigma11LayeredTop)
-  | Sigma11Bot => (nil, Sigma11LayeredBottom)
+  | Sigma11Bot => (nil, Sigma11LayeredBot)
   end.
 
   Fixpoint FoldBubbledQuantifiers
