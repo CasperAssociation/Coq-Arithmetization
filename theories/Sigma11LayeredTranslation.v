@@ -227,19 +227,21 @@ Module Sigma11LayeredTranslationInternal (Params : Sigma11Parameters).
   | Sigma11LayeredBot => Sigma11LayeredBot
   end.
 
-  Fixpoint ExiNums (qs : seq (sum Sigma11Term (seq Sigma11Term * Sigma11Term))) : nat :=
-    match qs with
-    | nil => 0
-    | inl _ :: xs => ExiNums xs
-    | inr _ :: xs => (ExiNums xs).+1
-    end.
+  Definition UniNums (qs : seq (sum Sigma11Term (seq Sigma11Term * Sigma11Term))) : nat :=
+    let inl1 x :=
+      match x with
+      | inl _ => 1
+      | inr _ => 0
+      end in
+    \sum_(i <- qs) (inl1 i).
 
-  Fixpoint UniNums (qs : seq (sum Sigma11Term (seq Sigma11Term * Sigma11Term))) : nat :=
-    match qs with
-    | nil => 0
-    | inl _ :: xs => (UniNums xs).+1
-    | inr _ :: xs => UniNums xs
-    end.
+  Definition ExiNums (qs : seq (sum Sigma11Term (seq Sigma11Term * Sigma11Term))) : nat :=
+    let inr1 x :=
+      match x with
+      | inl _ => 0
+      | inr _ => 1
+      end in
+    \sum_(i <- qs) (inr1 i).
 
   Definition AdjustFormulaPair
     (left right : seq (sum Sigma11Term (seq Sigma11Term * Sigma11Term)) * Sigma11LayeredZOFormula) :
