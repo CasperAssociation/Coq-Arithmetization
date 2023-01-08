@@ -207,7 +207,7 @@ Module Sigma11Internal (Params : Sigma11Parameters).
   | Sigma11ForSome bs y f => 
     \oexi (F in {ffun 'F_FSize ^ length bs -> option ('F_FSize)} |
       Fun_Bound_Check M (finfun_of_tuple (in_tuple bs)) y F == Some true)
-      (Sigma11FormulaDenote (AddModelF M (existT _ (size bs) F)) f)
+      Sigma11FormulaDenote (AddModelF M (existT _ (size bs) F)) f
   | Sigma11Top => Some true
   | Sigma11Bot => Some false
   end.
