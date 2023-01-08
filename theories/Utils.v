@@ -222,6 +222,11 @@ Proof.
   by rewrite (tnth_nth a).
 Qed.
 
+Theorem map_concat {A B} (f : A -> B) (s1 s2 : seq A) :
+  [seq f i | i <- s1 ++ s2] = 
+  [seq f i | i <- s1] ++ [seq f i | i <- s2].
+Proof. elim s1; qauto. Qed.
+
 Theorem map_nth_2 {A B} (f : A -> B) (s : seq A) (o : 'I_(length s)) :
   f (tnth (in_tuple s) o) 
   = tnth (in_tuple [seq f i | i <- s]) (eq_rect _ _ o _ (esym (map_length f _))).
