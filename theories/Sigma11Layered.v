@@ -28,7 +28,7 @@ Module Sigma11LayeredInternal (Params : Sigma11Parameters).
   | Sigma11LayeredImplies : Sigma11LayeredZOFormula -> Sigma11LayeredZOFormula -> Sigma11LayeredZOFormula
   | Sigma11LayeredIff : Sigma11LayeredZOFormula -> Sigma11LayeredZOFormula -> Sigma11LayeredZOFormula
   | Sigma11LayeredTop : Sigma11LayeredZOFormula
-  | Sigma11LayeredBottom : Sigma11LayeredZOFormula.
+  | Sigma11LayeredBot : Sigma11LayeredZOFormula.
 
   (* Formulas with quantifiers *)
   Inductive Sigma11LayeredFormula : Type :=

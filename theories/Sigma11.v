@@ -20,6 +20,8 @@ Module Sigma11Internal (Params : Sigma11Parameters).
   Import Params.
   Export Params.
 
+  Definition Hole {A} : A. Admitted.
+
   Inductive Sigma11Term : Type :=
   | Sigma11Var : nat -> Sigma11Term
   | Sigma11App : nat -> forall a, (Sigma11Term ^ a) -> Sigma11Term
@@ -50,7 +52,7 @@ Module Sigma11Internal (Params : Sigma11Parameters).
   (* | Sigma11ForSomeP : ??? -> Sigma11Formula *)
   (* | Sigma11Given : ??? -> Sigma11Formula *)
   | Sigma11Top : Sigma11Formula
-  | Sigma11Bottom : Sigma11Formula.
+  | Sigma11Bot : Sigma11Formula.
 
   Record Sigma11Model : Type :=
   mkSigma11Model {
