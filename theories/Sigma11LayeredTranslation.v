@@ -26,7 +26,7 @@ Module Sigma11LayeredTranslationInternal (Params : Sigma11Parameters).
   | Sigma11Not f => NoQuantifiers f
   | Sigma11And f1 f2 => NoQuantifiers f1 && NoQuantifiers f2
   | Sigma11Or f1 f2 => NoQuantifiers f1 && NoQuantifiers f2
-  | Sigma11Implies f1 f2 => NoQuantifiers f2 && NoQuantifiers f2
+  | Sigma11Implies f1 f2 => NoQuantifiers f1 && NoQuantifiers f2
   | Sigma11Iff f1 f2 => NoQuantifiers f1 && NoQuantifiers f2
   | Sigma11ForAll b f => false
   | Sigma11ForSome bs y f => false
@@ -46,7 +46,7 @@ Module Sigma11LayeredTranslationInternal (Params : Sigma11Parameters).
   | Sigma11And f1 f2 => NoUniversalQuantifiers f1 && NoUniversalQuantifiers f2
   | Sigma11Or f1 f2 => NoQuantifiers f1 && NoQuantifiers f2
   (*Note: This could be changed to detect non-functional existential quantifiers in the first argument*)
-  | Sigma11Implies f1 f2 => NoQuantifiers f2 && NoQuantifiers f2
+  | Sigma11Implies f1 f2 => NoQuantifiers f1 && NoQuantifiers f2
   (*Is there an alternative to this?*)
   | Sigma11Iff f1 f2 => NoQuantifiers f1 && NoQuantifiers f2
   | Sigma11ForAll b f => false
@@ -67,7 +67,7 @@ Module Sigma11LayeredTranslationInternal (Params : Sigma11Parameters).
   (*Note: (∀x.p(x)) \/ q <-> ∀x.p(x) \/ q, classically*)
   | Sigma11Or f1 f2 => NoExistentialQuantifiers f1 && NoExistentialQuantifiers f2
   (*Note: This could be changed to detect universal quantifiers in the first argument*)
-  | Sigma11Implies f1 f2 => NoQuantifiers f2 && NoExistentialQuantifiers f2
+  | Sigma11Implies f1 f2 => NoQuantifiers f1 && NoExistentialQuantifiers f2
   (*Is there an alternative to this?*)
   | Sigma11Iff f1 f2 => NoQuantifiers f1 && NoQuantifiers f2
   | Sigma11ForAll b f => NoExistentialQuantifiers f
@@ -89,7 +89,7 @@ Module Sigma11LayeredTranslationInternal (Params : Sigma11Parameters).
   (*Note: (∀x.p(x)) \/ q <-> ∀x.p(x) \/ q, classically*)
   | Sigma11Or f1 f2 => NoExistentialQuantifiers f1 && NoExistentialQuantifiers f2
   (*Note: This could be changed to detect non-functional quantifiers in the first argument, and swap them*)
-  | Sigma11Implies f1 f2 => NoQuantifiers f2 && NoExistentialQuantifiers f2
+  | Sigma11Implies f1 f2 => NoQuantifiers f1 && NoExistentialQuantifiers f2
   (*Is there an alternative to this?*)
   | Sigma11Iff f1 f2 => NoQuantifiers f1 && NoQuantifiers f2
   | Sigma11ForAll b f => BubblableFormula f
