@@ -175,33 +175,15 @@ Module Sigma11Internal (Params : Sigma11Parameters).
   Fixpoint Sigma11FormulaDenote (M : Sigma11Model)
   (f : Sigma11Formula) : option bool :=
   match f with
-  | Sigma11Equal r1 r2 => 
-    let d1 := Sigma11TermDenote M r1 in
-    let d2 := Sigma11TermDenote M r2 in
-    obind (fun r1 => obind (fun r2 => Some (r1 == r2)) d2) d1
-  | Sigma11LessOrEqual r1 r2 => 
-    let d1 := Sigma11TermDenote M r1 in
-    let d2 := Sigma11TermDenote M r2 in
-    obind (fun r1 : 'F_FSize => obind (fun r2 : 'F_FSize => Some ((r1 < r2) || (r1 == r2))) d2) d1
+  | Sigma11Equal r1 r2 => ofan (fun a b => (a == b)) r1 r2 (Sigma11TermDenote M)
+  | Sigma11LessOrEqual r1 r2 => ofan (fun a b : 'F_FSize => (a < b) || (a == b)) r1 r2 (Sigma11TermDenote M)
   | Sigma11Not f =>
     let d := Sigma11FormulaDenote M f in
     obind (fun d => Some (~~ d)) d
-  | Sigma11And f1 f2 =>
-    let d1 := Sigma11FormulaDenote M f1 in
-    let d2 := Sigma11FormulaDenote M f2 in
-    obind (fun r1 => obind (fun r2 => Some (r1 && r2)) d2) d1
-  | Sigma11Or f1 f2 => 
-    let d1 := Sigma11FormulaDenote M f1 in
-    let d2 := Sigma11FormulaDenote M f2 in
-    obind (fun r1 => obind (fun r2 => Some (r1 || r2)) d2) d1
-  | Sigma11Implies f1 f2 => 
-    let d1 := Sigma11FormulaDenote M f1 in
-    let d2 := Sigma11FormulaDenote M f2 in
-    obind (fun r1 => obind (fun r2 => Some (r1 ==> r2)) d2) d1
-  | Sigma11Iff f1 f2 => 
-    let d1 := Sigma11FormulaDenote M f1 in
-    let d2 := Sigma11FormulaDenote M f2 in
-    obind (fun r1 => obind (fun r2 => Some (r1 == r2)) d2) d1
+  | Sigma11And f1 f2 => ofan (fun a b => a && b) f1 f2 (Sigma11FormulaDenote M)
+  | Sigma11Or f1 f2 => ofan (fun a b => a || b) f1 f2 (Sigma11FormulaDenote M)
+  | Sigma11Implies f1 f2 => ofan (fun a b => a ==> b) f1 f2 (Sigma11FormulaDenote M)
+  | Sigma11Iff f1 f2 => ofan (fun a b => a == b) f1 f2 (Sigma11FormulaDenote M)
   | Sigma11ForAll b f => 
     let d := Sigma11TermDenote M b in
     \oall (r in 'F_FSize | obind (fun p' : 'F_FSize => Some (r < p')) (Sigma11TermDenote M b) == Some true) 
